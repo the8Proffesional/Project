@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil - Gestion Parc Info{% endblock %}
+
+{% block content %}
+    <h2>Bienvenue sur l'Application de Gestion du Parc Informatique</h2>
+    <p>Voici la liste actuelle des modèles de matériel :</p>
+
+    {% if models %}
+        <style>
+            /* Styles spécifiques pour le tableau dans index.html */
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+            th, td {
+                border: 1px solid #ddd;
+                padding: 12px;
+                text-align: left;
+            }
+            th {
+                background-color: #e7e7e7; /* Un gris plus clair */
+            }
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+            .no-models {
+                color: #777;
+                margin-top: 20px;
+            }
+        </style>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Type</th>
+                    <th>Fabricant</th>
+                    <th>Nom du Modèle</th>
+                    <!-- Ajouter ici des colonnes Actions (Modifier/Supprimer) plus tard -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for model in models %}
+                <tr>
+                    <td>{{ model.id }}</td>
+                    <td>{{ model.type.nom }}</td>
+                    <td>{{ model.fabricant.nom }}</td>
+                    <td>{{ model.nom }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="no-models">Aucun modèle n'a été ajouté pour le moment.</p>
+    {% endif %}
+{% endblock %}

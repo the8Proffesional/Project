@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des Fabricants{% endblock %}
+
+{% block content %}
+    <h2>Gestion des Fabricants</h2>
+    <hr>
+
+    {# Styles spécifiques pour cette page (formulaire d'ajout inline) #}
+    <style>
+        .add-form div { margin-bottom: 10px; }
+        .add-form label { font-weight: bold; margin-right: 10px;}
+        .add-form input[type="text"] { padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-right: 10px; }
+    </style>
+
+    {# Formulaire pour ajouter un nouveau fabricant #}
+    <h3>Ajouter un fabricant</h3>
+    <form method="post" action="{{ url_for('admin_fabricants') }}" class="add-form">
+        <div>
+            <label for="nom">Nom:</label>
+            <input type="text" id="nom" name="nom" required>
+            <button type="submit" class="btn btn-add">Ajouter</button>
+        </div>
+    </form>
+    <hr>
+
+    {# Tableau listant les fabricants existants #}
+    <h3>Fabricants Existants</h3>
+    {% if fabricants %}
+        <table class="table-admin">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fab in fabricants %}
+                <tr>
+                    <td>{{ fab.id }}</td>
+                    <td>{{ fab.nom }}</td>
+                    <td class="actions">
+                        {# Bouton Modifier (lien vers la page d'édition) #}
+                        <a href="{{ url_for('admin_edit_fabricant', id=fab.id) }}" class="btn btn-edit">Modifier</a>
+                        
+                        {# Bouton Supprimer (Formulaire POST) #}
+                        <form method="post" action="{{ url_for('admin_delete_fabricant', id=fab.id) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce fabricant ?');">
+                            <button type="submit" class="btn btn-delete">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucun fabricant n'a été ajouté pour le moment.</p>
+    {% endif %}
+
+{% endblock %}

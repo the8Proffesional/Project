@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Connexion Admin{% endblock %}
+
+{% block content %}
+    <h2>Connexion Administrateur</h2>
+    <hr>
+
+    <form method="post" class="form-admin">
+        <div>
+            <label for="username">Nom d'utilisateur:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div>
+            <label for="password">Mot de passe:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div>
+            <button type="submit" class="btn btn-submit">Se connecter</button>
+        </div>
+    </form>
+{% endblock %}

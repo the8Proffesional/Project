@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de Bord Admin{% endblock %}
+
+{% block content %}
+    <h2>Tableau de Bord Administrateur</h2>
+    <p>Bienvenue dans la section d'administration.</p>
+    <hr>
+
+    <div class="admin-links">
+        <a href="{{ url_for('admin_fabricants') }}">Gérer les Fabricants</a>
+        <a href="{{ url_for('admin_types') }}">Gérer les Types</a>
+        <a href="{{ url_for('add_model') }}">Ajouter un Modèle</a>
+        <!-- Ajoutez d'autres liens d'administration ici si nécessaire -->
+    </div>
+
+{% endblock %}

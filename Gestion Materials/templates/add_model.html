@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Ajouter un Nouveau Modèle (Admin) - Gestion Parc Info{% endblock %}
+
+{% block content %}
+    <h2>Ajouter un Nouveau Modèle (Admin)</h2>
+    <hr>
+    <form method="POST" class="form-admin">
+        <div>
+            <label for="model_name">Nom du Modèle:</label>
+            <input type="text" id="model_name" name="nom" required>
+        </div>
+        <div>
+            <label for="fabricant_id">Fabricant:</label>
+            <select id="fabricant_id" name="fabricant_id" required>
+                <option value="" disabled selected>-- Choisir un fabricant --</option>
+                {% for fab in fabricants %}
+                    <option value="{{ fab.id }}">{{ fab.nom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="type_id">Type:</label>
+            <select id="type_id" name="type_id" required>
+                <option value="" disabled selected>-- Choisir un type --</option>
+                {% for t in types %}
+                    <option value="{{ t.id }}">{{ t.nom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <button type="submit" class="btn btn-submit">Ajouter le Modèle</button>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-cancel">Annuler</a>
+        </div>
+    </form>
+
+{% endblock %}

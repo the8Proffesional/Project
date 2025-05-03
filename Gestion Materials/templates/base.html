@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Le titre sera défini par les pages enfants -->
+    <title>{% block title %}Gestion Parc Info{% endblock %}</title>
+    <!-- Lien vers le fichier CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Gestion du Parc Informatique</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Accueil</a></li>
+                {% if session.logged_in %}
+                    <li><a href="{{ url_for('admin_dashboard') }}">Admin</a></li>
+                    <li><a href="{{ url_for('add_model') }}">Ajouter Modèle</a></li>
+                    <li><a href="{{ url_for('admin_logout') }}">Déconnexion</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('admin_login') }}">Connexion Admin</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        {# Affichage des messages Flash #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category or 'info' }}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Contenu spécifique de la page sera inséré ici -->
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <!-- Vous pouvez ajouter un pied de page ici si nécessaire -->
+    </footer>
+
+    {# Ajout de styles simples pour les alertes flash #}
+    <style>
+        /* Styles généraux pour les formulaires admin */
+        .form-admin {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .form-admin div { margin-bottom: 15px; }
+        .form-admin label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-admin input[type="text"], 
+        .form-admin input[type="password"],
+        .form-admin select { 
+            width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;
+        }
+
+        /* Styles pour les boutons communs */
+        .btn {
+            display: inline-block; /* Nécessaire pour padding/margin */
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            text-decoration: none; /* Pour les liens stylisés comme boutons */
+            font-size: 14px;
+            text-align: center;
+            vertical-align: middle;
+            margin: 5px 5px 5px 0; /* Marge autour des boutons */
+        }
+        .btn-add { background-color: #28a745; } /* Vert */
+        .btn-edit { background-color: #ffc107; color: #333; } /* Jaune */
+        .btn-delete { background-color: #dc3545; } /* Rouge */
+        .btn-submit { background-color: #007bff; font-size: 16px; padding: 10px 15px; } /* Bleu */
+        .btn-cancel { background-color: #6c757d; font-size: 16px; padding: 10px 15px;} /* Gris */
+
+        .btn-add:hover { background-color: #218838; }
+        .btn-edit:hover { background-color: #e0a800; }
+        .btn-delete:hover { background-color: #c82333; }
+        .btn-submit:hover { background-color: #0056b3; }
+        .btn-cancel:hover { background-color: #5a6268; }
+
+        /* Styles pour les tables admin */
+        .table-admin {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+        .table-admin th, .table-admin td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            vertical-align: middle;
+        }
+        .table-admin th { background-color: #e9ecef; }
+        .table-admin tr:nth-child(even) { background-color: #f8f9fa; }
+        .table-admin .actions form { display: inline-block; margin: 0 2px; }
+
+        /* Styles pour les liens du dashboard */
+        .admin-links a {
+            display: inline-block;
+            margin: 10px 10px 10px 0;
+            padding: 15px 25px;
+            background-color: #5a6268; /* Gris */
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            text-align: center;
+        }
+        .admin-links a:hover {
+            background-color: #495057;
+        }
+
+        /* Styles pour les alertes flash */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+        .alert-success { color: #155724; background-color: #d4edda; border-color: #c3e6cb; }
+        .alert-danger { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
+        .alert-warning { color: #856404; background-color: #fff3cd; border-color: #ffeeba; }
+        .alert-info { color: #0c5460; background-color: #d1ecf1; border-color: #bee5eb; }
+    </style>
+</body>
+</html>
