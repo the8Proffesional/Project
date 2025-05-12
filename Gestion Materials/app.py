@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps # Pour le décorateur login_required
 import os # Pour générer une SECRET_KEY si non définie
+from collections import defaultdict # Importer defaultdict
 
 app = Flask(__name__)
 # Configuration
@@ -57,9 +58,27 @@ def login_required(f):
 # --- Routes Publiques ---
 @app.route('/')
 def index():
-    """Affiche la liste publique des modèles."""
-    all_models = Modele.query.all()
-    return render_template('index.html', models=all_models)
+    """Affiche la liste publique des modèles, groupés par type."""
+    # Récupérer tous les types pour pouvoir les afficher même s'ils n'ont pas de modèles
+    all_types = Type.query.order_by(Type.nom).all()
+    # Récupérer tous les modèles avec leurs informations de type et fabricant préchargées
+    all_models = Modele.query.options(db.joinedload(Modele.type), db.joinedload(Modele.fabricant)).order_by(Modele.type_id, Modele.nom).all()
+
+    # Grouper les modèles par type
+    models_by_type = defaultdict(list)
+    for model in all_models:
+        models_by_type[model.type].append(model)
+
+    # Créer une liste ordonnée pour le template, incluant les types sans modèles
+    grouped_data = []
+    for type_obj in all_types:
+        grouped_data.append({
+            'type': type_obj,
+            'models': models_by_type.get(type_obj, []) # Utiliser get pour gérer les types sans modèles
+        })
+
+    # Renvoyer les données groupées au template
+    return render_template('index.html', grouped_data=grouped_data)
 
 # --- Routes pour la gestion des Modèles (Maintenant sous Admin) ---
 @app.route('/admin/add_model', methods=['GET', 'POST'])

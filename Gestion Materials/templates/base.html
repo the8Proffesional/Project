@@ -17,6 +17,8 @@
                 {% if session.logged_in %}
                     <li><a href="{{ url_for('admin_dashboard') }}">Admin</a></li>
                     <li><a href="{{ url_for('add_model') }}">Ajouter Modèle</a></li>
+                    <li><a href="{{ url_for('admin_types') }}">Types</a></li>
+                    <li><a href="{{ url_for('admin_fabricants') }}">Fabricants</a></li>
                     <li><a href="{{ url_for('admin_logout') }}">Déconnexion</a></li>
                 {% else %}
                     <li><a href="{{ url_for('admin_login') }}">Connexion Admin</a></li>

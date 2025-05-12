@@ -4,54 +4,73 @@
 
 {% block content %}
     <h2>Bienvenue sur l'Application de Gestion du Parc Informatique</h2>
-    <p>Voici la liste actuelle des modèles de matériel :</p>
+    <p>Voici la liste actuelle des modèles de matériel, classés par type :</p>
 
-    {% if models %}
+    {% if grouped_data %}
         <style>
-            /* Styles spécifiques pour le tableau dans index.html */
+            /* Styles généraux pour les tableaux */
             table {
                 width: 100%;
                 border-collapse: collapse;
-                margin-top: 20px;
+                margin-top: 10px; /* Espace réduit au-dessus de chaque tableau */
+                margin-bottom: 30px; /* Espace après chaque tableau */
             }
             th, td {
                 border: 1px solid #ddd;
-                padding: 12px;
+                padding: 10px; /* Padding ajusté */
                 text-align: left;
             }
             th {
-                background-color: #e7e7e7; /* Un gris plus clair */
+                background-color: #e7e7e7; /* Gris clair pour l'en-tête */
             }
             tr:nth-child(even) {
                 background-color: #f9f9f9;
             }
-            .no-models {
+            h3 {
+                margin-top: 30px; /* Espace avant le titre du type */
+                margin-bottom: 5px;
+                border-bottom: 1px solid #ccc;
+                padding-bottom: 5px;
+            }
+            .no-models-for-type {
+                color: #777;
+                margin-top: 10px;
+                font-style: italic;
+            }
+            .no-models-overall {
                 color: #777;
                 margin-top: 20px;
             }
         </style>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Type</th>
-                    <th>Fabricant</th>
-                    <th>Nom du Modèle</th>
-                    <!-- Ajouter ici des colonnes Actions (Modifier/Supprimer) plus tard -->
-                </tr>
-            </thead>
-            <tbody>
-                {% for model in models %}
-                <tr>
-                    <td>{{ model.id }}</td>
-                    <td>{{ model.type.nom }}</td>
-                    <td>{{ model.fabricant.nom }}</td>
-                    <td>{{ model.nom }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+
+        {% for item in grouped_data %}
+            <h3>{{ item.type.nom }}</h3>
+            {% if item.models %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fabricant</th>
+                            <th>Nom du Modèle</th>
+                            <!-- ID est retiré -->
+                            <!-- Ajouter ici des colonnes Actions (Modifier/Supprimer) plus tard si nécessaire -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for model in item.models %}
+                        <tr>
+                            <td>{{ model.fabricant.nom }}</td>
+                            <td>{{ model.nom }}</td>
+                            <!-- <td>{{ model.type.nom }}</td> - Redondant car déjà groupé par type -->
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="no-models-for-type">Aucun modèle de ce type n'a été ajouté pour le moment.</p>
+            {% endif %}
+        {% endfor %}
+
     {% else %}
-        <p class="no-models">Aucun modèle n'a été ajouté pour le moment.</p>
+        <p class="no-models-overall">Aucun type ou modèle n'a été ajouté pour le moment.</p>
     {% endif %}
 {% endblock %}
