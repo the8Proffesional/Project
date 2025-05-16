@@ -1,0 +1,48 @@
+{% extends "base.html" %} 
+
+{% block title %}Gestion des Modèles{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Gestion des Modèles</h2>
+    <a href="{{ url_for('add_model') }}" class="btn btn-success mb-3">Ajouter un Modèle</a>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if models %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Fabricant</th>
+                <th>Type</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for modele in models %}
+            <tr>
+                <td>{{ modele.nom }}</td>
+                <td>{{ modele.fabricant.nom }}</td>
+                <td>{{ modele.type.nom }}</td>
+                <td>
+                    <a href="{{ url_for('admin_edit_modele', id=modele.id) }}" class="btn btn-sm btn-primary">Modifier</a>
+                    <form action="{{ url_for('admin_delete_modele', id=modele.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce modèle ?');">
+                        <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Aucun modèle trouvé. <a href="{{ url_for('add_model') }}">Ajoutez-en un !</a></p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -51,8 +51,9 @@
                         <tr>
                             <th>Fabricant</th>
                             <th>Nom du Modèle</th>
-                            <!-- ID est retiré -->
-                            <!-- Ajouter ici des colonnes Actions (Modifier/Supprimer) plus tard si nécessaire -->
+                            {% if session.logged_in %}
+                            <th>Actions</th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
@@ -60,7 +61,14 @@
                         <tr>
                             <td>{{ model.fabricant.nom }}</td>
                             <td>{{ model.nom }}</td>
-                            <!-- <td>{{ model.type.nom }}</td> - Redondant car déjà groupé par type -->
+                            {% if session.logged_in %}
+                            <td>
+                                <a href="{{ url_for('admin_edit_modele', id=model.id) }}" class="btn btn-sm btn-primary">Modifier</a>
+                                <form action="{{ url_for('admin_delete_modele', id=model.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce modèle ?');">
+                                    <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                                </form>
+                            </td>
+                            {% endif %}
                         </tr>
                         {% endfor %}
                     </tbody>

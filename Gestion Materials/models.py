@@ -39,3 +39,32 @@ class Utilisateur(db.Model):
 
     def __repr__(self):
         return f'<Utilisateur {self.nom_utilisateur}>'
+
+# Models to be moved from app.py
+class Fabricant(db.Model):
+    __tablename__ = 'fabricant'
+    id = db.Column(db.Integer, primary_key=True)
+    nom = db.Column(db.String(80), unique=True, nullable=False)
+    modeles = db.relationship('Modele', backref='fabricant', lazy=True)
+
+    def __repr__(self):
+        return f'<Fabricant {self.nom}>'
+
+class Type(db.Model):
+    __tablename__ = 'type'
+    id = db.Column(db.Integer, primary_key=True)
+    nom = db.Column(db.String(80), unique=True, nullable=False)
+    modeles = db.relationship('Modele', backref='type', lazy=True)
+
+    def __repr__(self):
+        return f'<Type {self.nom}>'
+
+class Modele(db.Model):
+    __tablename__ = 'modeles'
+    id = db.Column(db.Integer, primary_key=True)
+    nom = db.Column(db.String(120), nullable=False)
+    fabricant_id = db.Column(db.Integer, db.ForeignKey('fabricant.id'), nullable=False)
+    type_id = db.Column(db.Integer, db.ForeignKey('type.id'), nullable=False)
+
+    def __repr__(self):
+        return f'<Modele {self.nom}>'

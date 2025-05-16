@@ -4,7 +4,7 @@ import os # Pour générer une SECRET_KEY si non définie
 from collections import defaultdict # Importer defaultdict
 
 from extensions import db # Import shared db instance
-from models import Arrondissement, Departement, Bureau, Utilisateur # Import new models
+from models import Arrondissement, Departement, Bureau, Utilisateur, Fabricant, Type, Modele # Import new models
 
 app = Flask(__name__)
 # Configuration
@@ -14,38 +14,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Identifiants Admin (NON SECURISE - À remplacer par une vraie gestion utilisateurs)
 app.config['ADMIN_USERNAME'] = 'admin'
-# app.config['ADMIN_PASSWORD'] = 'password' # Changez ceci !
+app.config['ADMIN_PASSWORD'] = 'password' # Changez ceci !
 
 db.init_app(app) # Initialize db with the app
-
-# --- Définition des Modèles SQLAlchemy ---
-# (Modèles Fabricant, Type, Modele restent identiques)
-class Fabricant(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    nom = db.Column(db.String(80), unique=True, nullable=False)
-    modeles = db.relationship('Modele', backref='fabricant', lazy=True)
-
-    def __repr__(self):
-        return f'<Fabricant {self.nom}>'
-
-class Type(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    nom = db.Column(db.String(80), unique=True, nullable=False)
-    modeles = db.relationship('Modele', backref='type', lazy=True)
-
-    def __repr__(self):
-        return f'<Type {self.nom}>'
-
-class Modele(db.Model):
-    __tablename__ = 'modeles'
-    id = db.Column(db.Integer, primary_key=True)
-    nom = db.Column(db.String(120), nullable=False)
-    fabricant_id = db.Column(db.Integer, db.ForeignKey('fabricant.id'), nullable=False)
-    type_id = db.Column(db.Integer, db.ForeignKey('type.id'), nullable=False)
-
-    def __repr__(self):
-        return f'<Modele {self.nom}>'
-# --- Fin Définition des Modèles ---
 
 # --- Décorateur de Login --- 
 def login_required(f):
@@ -115,7 +86,7 @@ def add_model():
             db.session.add(nouveau_modele)
             db.session.commit()
             flash('Modèle ajouté avec succès!', 'success')
-            return redirect(url_for('admin_dashboard')) # Rediriger vers le tableau de bord admin
+            return redirect(url_for('index')) # Rediriger vers la page d'accueil
         except Exception as e:
             db.session.rollback()
             flash(f'Erreur lors de l\'ajout du modèle: {e}', 'danger')
@@ -124,6 +95,58 @@ def add_model():
     fabricants = Fabricant.query.order_by(Fabricant.nom).all()
     types = Type.query.order_by(Type.nom).all()
     return render_template('add_model.html', fabricants=fabricants, types=types)
+
+@app.route('/admin/modele/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def admin_edit_modele(id):
+    modele_a_modifier = db.get_or_404(Modele, id)
+    if request.method == 'POST':
+        nom = request.form.get('nom')
+        fabricant_id_str = request.form.get('fabricant_id')
+        type_id_str = request.form.get('type_id')
+
+        if not nom or not fabricant_id_str or not type_id_str:
+            flash('Nom, Fabricant et Type sont requis.', 'danger')
+        else:
+            try:
+                fabricant_id = int(fabricant_id_str)
+                type_id = int(type_id_str)
+                
+                fabricant = Fabricant.query.get(fabricant_id)
+                type_item = Type.query.get(type_id)
+
+                if not fabricant or not type_item:
+                    flash('Fabricant ou Type invalide.', 'danger')
+                else:
+                    modele_a_modifier.nom = nom
+                    modele_a_modifier.fabricant_id = fabricant_id
+                    modele_a_modifier.type_id = type_id
+                    db.session.commit()
+                    flash('Modèle mis à jour avec succès!', 'success')
+                    return redirect(url_for('index')) # Redirect to the main index page
+            except ValueError:
+                flash('ID de Fabricant ou de Type invalide.', 'danger')
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Erreur lors de la mise à jour du modèle: {e}', 'danger')
+        
+    # For GET request or if POST had an error, re-render the form
+    fabricants = Fabricant.query.order_by(Fabricant.nom).all()
+    types = Type.query.order_by(Type.nom).all()
+    return render_template('edit_model.html', modele=modele_a_modifier, fabricants=fabricants, types=types)
+
+@app.route('/admin/modele/delete/<int:id>', methods=['POST'])
+@login_required
+def admin_delete_modele(id):
+    modele_a_supprimer = db.get_or_404(Modele, id)
+    try:
+        db.session.delete(modele_a_supprimer)
+        db.session.commit()
+        flash(f'Modèle "{modele_a_supprimer.nom}" supprimé avec succès.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Erreur lors de la suppression du modèle: {e}', 'danger')
+    return redirect(url_for('index')) # Redirect to the main index page
 
 # --- Routes Administration --- 
 

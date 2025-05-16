@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier Modèle: {{ modele.nom }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Modifier Modèle: {{ modele.nom }}</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('admin_edit_modele', id=modele.id) }}">
+        <div class="mb-3">
+            <label for="nom" class="form-label">Nom du Modèle:</label>
+            <input type="text" class="form-control" id="nom" name="nom" value="{{ request.form.nom or modele.nom }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="fabricant_id" class="form-label">Fabricant:</label>
+            <select class="form-select" id="fabricant_id" name="fabricant_id" required>
+                {% for fabricant in fabricants %}
+                <option value="{{ fabricant.id }}" {% if (request.form.fabricant_id | string == fabricant.id | string) or (not request.form.fabricant_id and modele.fabricant_id | string == fabricant.id | string) %}selected{% endif %}>
+                    {{ fabricant.nom }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="type_id" class="form-label">Type:</label>
+            <select class="form-select" id="type_id" name="type_id" required>
+                {% for type_item in types %}
+                <option value="{{ type_item.id }}" {% if (request.form.type_id | string == type_item.id | string) or (not request.form.type_id and modele.type_id | string == type_item.id | string) %}selected{% endif %}>
+                    {{ type_item.nom }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}
