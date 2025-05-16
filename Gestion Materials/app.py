@@ -1,8 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from flask_sqlalchemy import SQLAlchemy
 from functools import wraps # Pour le décorateur login_required
 import os # Pour générer une SECRET_KEY si non définie
 from collections import defaultdict # Importer defaultdict
+
+from extensions import db # Import shared db instance
+from models import Arrondissement, Departement, Bureau, Utilisateur # Import new models
 
 app = Flask(__name__)
 # Configuration
@@ -12,9 +14,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Identifiants Admin (NON SECURISE - À remplacer par une vraie gestion utilisateurs)
 app.config['ADMIN_USERNAME'] = 'admin'
-app.config['ADMIN_PASSWORD'] = 'password' # Changez ceci !
+# app.config['ADMIN_PASSWORD'] = 'password' # Changez ceci !
 
-db = SQLAlchemy(app)
+db.init_app(app) # Initialize db with the app
 
 # --- Définition des Modèles SQLAlchemy ---
 # (Modèles Fabricant, Type, Modele restent identiques)
